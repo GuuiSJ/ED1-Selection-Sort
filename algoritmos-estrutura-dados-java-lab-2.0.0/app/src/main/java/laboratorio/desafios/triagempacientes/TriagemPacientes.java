@@ -24,19 +24,16 @@ public class TriagemPacientes implements ITriagem {
 
     @Override
     public void admitirPaciente(IPaciente paciente) {
-        // Novos pacientes entram no final da fila de espera.
         this.listaDeEspera.enfileirar(paciente);
     }
 
     @Override
     public void processarTriagemEmLote() {
-        // Etapa 1: Separar pacientes em críticos e não críticos
         IFila<IPaciente> naoCriticos = new FilaComListaDuplamenteEncadeada<>();
         IFila<IPaciente> criticosParaOrdenar = new FilaComListaDuplamenteEncadeada<>();
 
         while (!this.listaDeEspera.estaVazia()) {
             IPaciente paciente = this.listaDeEspera.desenfileirar();
-            // Assumindo que a classe Gravidade tem um método ehCritico()
             if (paciente.obterGravidade().ehCritico()) { 
                 criticosParaOrdenar.enfileirar(paciente);
             } else {
@@ -44,7 +41,6 @@ public class TriagemPacientes implements ITriagem {
             }
         }
 
-        // Etapa 2: Ordenar os pacientes críticos com Selection Sort usando Filas
         int totalCriticos = criticosParaOrdenar.tamanho();
         IFila<IPaciente> criticosOrdenados = new FilaComListaDuplamenteEncadeada<>();
 
@@ -54,8 +50,6 @@ public class TriagemPacientes implements ITriagem {
             
             while (!criticosParaOrdenar.estaVazia()) {
                 IPaciente pacienteAtual = criticosParaOrdenar.desenfileirar();
-                
-                // --- CORREÇÃO DOS NOMES DOS MÉTODOS AQUI ---
                 if (pacienteAtual.obterGravidade().obterNivel() < pacienteMaisUrgenteDaVez.obterGravidade().obterNivel() ||
                    (pacienteAtual.obterGravidade().obterNivel() == pacienteMaisUrgenteDaVez.obterGravidade().obterNivel() &&
                     pacienteAtual.obterHorarioChegada() < pacienteMaisUrgenteDaVez.obterHorarioChegada())) {
@@ -71,7 +65,6 @@ public class TriagemPacientes implements ITriagem {
             criticosParaOrdenar = filaRestante;
         }
 
-        // Etapa 3: Reorganizar as listas
         IPilha<IPaciente> pilhaInversora = new PilhaComListaSimplesmenteEncadeada<>();
         while (!criticosOrdenados.estaVazia()) {
             pilhaInversora.empilhar(criticosOrdenados.desenfileirar());
